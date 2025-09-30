@@ -8,13 +8,13 @@ import 'package:http/http.dart' as http;
 class AddressFormPage extends StatefulWidget {
   final Address? address;
   const AddressFormPage({super.key, this.address});
+
   @override
   State<AddressFormPage> createState() => _AddressFormPageState();
 }
 
 class _AddressFormPageState extends State<AddressFormPage> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController cepController = TextEditingController();
   final TextEditingController logradouroController = TextEditingController();
@@ -22,6 +22,20 @@ class _AddressFormPageState extends State<AddressFormPage> {
   final TextEditingController cidadeController = TextEditingController();
   final TextEditingController ufController = TextEditingController();
   final TextEditingController tipoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.address != null) {
+      nomeController.text = widget.address!.nomeUsuario;
+      cepController.text = widget.address!.cep;
+      logradouroController.text = widget.address!.logradouro;
+      bairroController.text = widget.address!.bairro;
+      cidadeController.text = widget.address!.cidade;
+      ufController.text = widget.address!.uf;
+      tipoController.text = widget.address!.tipo;
+    }
+  }
 
   Future<void> saveAddress() async {
     if (_formKey.currentState!.validate()) {
@@ -90,34 +104,16 @@ class _AddressFormPageState extends State<AddressFormPage> {
         false; // se o usuário fechar o diálogo sem escolher
   }
 
-  Future<void> fetchCep() async {
-    final cep = cepController.text;
-    if (cep.isEmpty) return;
-
-    final response = await http.get(Uri.parse(ApiConfig.cep(cep)));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        logradouroController.text = data['logradouro'];
-        bairroController.text = data['bairro'];
-        cidadeController.text = data['cidade'];
-        ufController.text = data['uf'];
-      });
-    }
-  }
-
   @override
-  void initState() {
-    super.initState();
-    if (widget.address != null) {
-      nomeController.text = widget.address!.nomeUsuario;
-      cepController.text = widget.address!.cep;
-      logradouroController.text = widget.address!.logradouro;
-      bairroController.text = widget.address!.bairro;
-      cidadeController.text = widget.address!.cidade;
-      ufController.text = widget.address!.uf;
-      tipoController.text = widget.address!.tipo;
-    }
+  void dispose() {
+    nomeController.dispose();
+    cepController.dispose();
+    logradouroController.dispose();
+    bairroController.dispose();
+    cidadeController.dispose();
+    ufController.dispose();
+    tipoController.dispose();
+    super.dispose();
   }
 
   @override
@@ -147,20 +143,15 @@ class _AddressFormPageState extends State<AddressFormPage> {
                       decoration: const InputDecoration(labelText: "CEP"),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: fetchCep,
-                  ),
+                  IconButton(icon: const Icon(Icons.search), onPressed: () {}),
                 ],
               ),
-
               TextFormField(
                 controller: logradouroController,
                 decoration: const InputDecoration(labelText: "Logradouro"),
                 validator: (v) =>
                     (v == null || v.isEmpty) ? 'Preencha o logradouro' : null,
               ),
-
               TextFormField(
                 controller: bairroController,
                 decoration: const InputDecoration(labelText: "Bairro"),
@@ -173,7 +164,6 @@ class _AddressFormPageState extends State<AddressFormPage> {
                 validator: (v) =>
                     (v == null || v.isEmpty) ? 'Preencha a cidade' : null,
               ),
-
               TextFormField(
                 controller: ufController,
                 decoration: const InputDecoration(labelText: "UF"),
@@ -209,17 +199,5 @@ class _AddressFormPageState extends State<AddressFormPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    nomeController.dispose();
-    cepController.dispose();
-    logradouroController.dispose();
-    bairroController.dispose();
-    cidadeController.dispose();
-    ufController.dispose();
-    tipoController.dispose();
-    super.dispose();
   }
 }

@@ -13,6 +13,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Address> addresses = [];
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +39,6 @@ class _HomePageState extends State<HomePage> {
     fetchAddresses();
   }
 
-  List<Address> addresses = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           return ListTile(
             title: Text(addr.nomeUsuario),
             subtitle: Text(
-              "${addr.logradouro}, ${addr.bairro} -${addr.cidade}/${addr.uf}",
+              "${addr.logradouro}, ${addr.bairro} - ${addr.cidade}/${addr.uf}",
             ),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () => goToForm(address: addr),
